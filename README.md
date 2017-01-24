@@ -126,10 +126,10 @@ You can write your content as a separate file and have reveal.js load it at runt
 When used locally, this feature requires that reveal.js [runs from a local web server](#full-setup).  The following example customises all available options:
 
 ```html
-<section data-markdown="example.md"  
-         data-separator="^\n\n\n"  
-         data-separator-vertical="^\n\n"  
-         data-separator-notes="^Note:"  
+<section data-markdown="example.md"
+         data-separator="^\n\n\n"
+         data-separator-vertical="^\n\n"
+         data-separator-notes="^Note:"
          data-charset="iso-8859-15">
 </section>
 ```
@@ -1153,7 +1153,7 @@ Some reveal.js features, like external Markdown and speaker notes, require that 
 
 1. Open <http://localhost:8000> to view your presentation
 
-   You can change the port by using `npm start -- --port 8001`.
+   You can change the port by using `npm start -- --port=8001`.
 
 
 ### Folder Structure
