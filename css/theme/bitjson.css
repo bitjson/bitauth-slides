@@ -91,6 +91,21 @@ body {
   color: #8dcffc;
   border-bottom: 1px solid #8dcffc; }
 
+.reveal var {
+  color: #8dcffc;
+}
+.reveal .evaluate-script {
+  font-family: monospace;
+}
+.reveal .evaluate-stack {
+  font-family: monospace;
+  opacity: .5;
+}
+
+.reveal .bitcoin-script {
+  font-size: .6em;
+}
+
 .reveal ol,
 .reveal dl,
 .reveal ul {

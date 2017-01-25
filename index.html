@@ -27,11 +27,13 @@
         <section>
           <h3>Authentication with Bitcoin</h3>
           <p>-</p>
-          <h4>Jason Dreyzehner</h4>
+          <h4>Jason Dreyzehner (<a href="https://twitter.com/bitjson">@bitjson</a>)</h4>
           <p>Atlanta Blockchain &amp; Bitcoin Meetup</p>
           <p><a href="https://bitauth.bitjson.com/">bitauth.bitjson.com</a></p>
         </section>
-        <section data-background-transition="zoom">
+
+
+        <section data-transition="zoom-in slide-out">
           <h2>BitAuth2017</h2>
           <blockquote>
             <p>universal identity and authentication protocol, based on bitcoin</p>
@@ -50,26 +52,256 @@
             To explain how this works, we'll need to dive into some of bitcoin's technical details.
           </aside>
         </section>
-				<section>
+
+
+
+				<section data-transition="zoom-in slide-out">
           <h1>Part 1:</h1>
           <h2>Authenticating bitcoin transactions</h2>
         </section>
+
 				<section>
-          <h2>How Bitcoin Works</h2>
+          <h3>How Bitcoin Works</h3>
           <br>
           <p>Send bitcoin to a <em>bitcoin address</em>.</p>
-          <p>The person with the <em>private key</em> can spend the money.</p>
+          <p>The person with the <em>private key</em><br> can spend the money.</p>
           <aside class="notes">
-            To explain how this works, we'll need to dive into some of bitcoin's technical details.
+            Most people understand bitcoin addresses to be like accounts. This is a bit of a simplification.
           </aside>
         </section>
-
-
-
 				<section>
+          <p>Bitcoin addresses are programs</p>
           <aside class="notes">
+            Every bitcoin address is actually a little program. It defines one or more authentication requirements for spending.
           </aside>
         </section>
+        <section>
+          <h3>How Bitcoin Actually Works</h3>
+          <br>
+          <p>Send bitcoin to a <em>locking script</em>.</p>
+          <p>The person with the <em>unlocking script</em><br> can spend the money.</p>
+          <aside class="notes">
+            With this in mind, we get a slightly different picture of how bitcoin actually works.<br> This will be a lot clearer with some examples.
+          </aside>
+        </section>
+        <section>
+          <h4>Pay to Public Key Hash (P2PKH)</h4>
+          <p>-</p>
+          <div class="fragment">
+            <h5>Locking Script</h5>
+            <p><code class="nohighlight bitcoin-script">OP_DUP OP_HASH160 <var>&lt;PubkeyHash&gt;</var> OP_EQUALVERIFY OP_CHECKSIG</code></p>
+          </div>
+          <div class="fragment">
+            <h5>Unlocking Script</h5>
+            <p><code class="nohighlight bitcoin-script"><var>&lt;Sig&gt;</var> <var>&lt;PubKey&gt;</var></code></p>
+          </div>
+          <aside class="notes">
+            The "canonical" bitcoin transaction is P2PKH. Here's what it looks like.<br>
+            Each of these operations has a very specific action it does, but it's simpler than it looks.<br>
+            We'll step through it on the next slide.
+          </aside>
+        </section>
+				<section>
+          <p>unlocking + locking script</p>
+          <p><code class="nohighlight" style="font-size: .5em"><var>&lt;Sig&gt;</var> <var>&lt;PubKey&gt;</var> | OP_DUP OP_HASH160 <var>&lt;PubkeyHash&gt;</var> OP_EQUALVERIFY OP_CHECKSIG</code></p>
+          <table style="font-size: .6em;">
+              <tr>
+                  <td><strong>Script</strong></td>
+                  <td><strong>Stack</strong></td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;Sig&gt;</td>
+                  <td class="evaluate-stack">&lt;Sig&gt;</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;PubKey&gt;</td>
+                  <td class="evaluate-stack">&lt;PubKey&gt; &lt;Sig&gt;</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_DUP</td>
+                  <td class="evaluate-stack">&lt;PubKey&gt; &lt;PubKey&gt; &lt;Sig&gt;</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_HASH160</td>
+                  <td class="evaluate-stack">&lt;PubkeyHash&gt; &lt;PubKey&gt; &lt;Sig&gt;</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;PubkeyHash&gt;</td>
+                  <td class="evaluate-stack">&lt;PubkeyHash&gt; &lt;PubkeyHash&gt; &lt;PubKey&gt; &lt;Sig&gt;</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_EQUALVERIFY</td>
+                  <td class="evaluate-stack">&lt;PubKey&gt; &lt;Sig&gt;</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_CHECKSIG</td>
+                  <td class="evaluate-stack">1 (success)</td>
+              </tr>
+            </table>
+          <aside class="notes">
+            To validated this, we basically add the locking script after the unlocking script, and run it. Here you can see the full program executed.
+          </aside>
+        </section>
+        <section>
+          <h4>Pay to Script Hash (P2SH) Multisig</h4>
+          <p>-</p>
+          <div class="fragment">
+            <h5>Locking Script</h5>
+            <p><code class="nohighlight bitcoin-script">OP_HASH160 <var>&lt;RedeemScriptHash&gt;</var> OP_EQUAL</code></p>
+          </div>
+          <div class="fragment">
+            <h5>Redeem Script</h5>
+            <p><code class="nohighlight bitcoin-script">2 <var>&lt;Pub A&gt;</var> <var>&lt;Pub B&gt;</var> <var>&lt;Pub C&gt;</var> 3 OP_CHECKMULTISIG</code></p>
+          </div>
+          <div class="fragment">
+            <h5>Unlocking Script</h5>
+            <p><code class="nohighlight bitcoin-script">0 <var>&lt;Sig A&gt;</var> <var>&lt;Sig C&gt;</var> <var>&lt;RedeemScript&gt;</var></code></p>
+          </div>
+          <aside class="notes">
+            Let's look at another example which really starts to demonstrate the power of this sort of scriptable authentication.
+          </aside>
+        </section>
+        <section>
+          <p>unlocking (with redeem) + locking script</p>
+          <table style="font-size: .4em;">
+              <tr>
+                  <td><strong>Script</strong></td>
+                  <td><strong>Stack</strong></td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">0</td>
+                  <td class="evaluate-stack">0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;sig A&gt;</td>
+                  <td class="evaluate-stack">&lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;sig C&gt;</td>
+                  <td class="evaluate-stack">&lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;RedeemScript&gt;</td>
+                  <td class="evaluate-stack">&lt;RedeemScript&gt; &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_HASH160</td>
+                  <td class="evaluate-stack">&lt;RedeemScriptHash&gt; &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;RedeemScriptHash&gt;</td>
+                  <td class="evaluate-stack">&lt;RedeemScriptHash&gt; &lt;RedeemScriptHash&gt; &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_EQUAL</td>
+                  <td class="evaluate-stack">&lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">2</td>
+                  <td class="evaluate-stack">2 &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;pub A&gt;</td>
+                  <td class="evaluate-stack">&lt;pub A&gt; 2 &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;pub B&gt;</td>
+                  <td class="evaluate-stack">&lt;pub B&gt; &lt;pub A&gt; 2 &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">&lt;pub C&gt;</td>
+                  <td class="evaluate-stack">&lt;pub C&gt; &lt;pub B&gt; &lt;pub A&gt; 2 &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">3</td>
+                  <td class="evaluate-stack">3 &lt;pub C&gt; &lt;pub B&gt; &lt;pub A&gt; 2 &lt;sig C&gt; &lt;sig A&gt; 0</td>
+              </tr>
+              <tr>
+                  <td class="evaluate-script">OP_CHECKMULTISIG</td>
+                  <td class="evaluate-stack">1</td>
+              </tr>
+          </table>
+          <aside class="notes">
+            Like the last time, our full script evaluates to true.
+          </aside>
+        </section>
+        <section>
+          <h1>P2ODorBoDorS</h1>
+          <p>Pay to Operations Department<br> or Board of Directors<br> or Supermajority</p>
+          <aside class="notes">
+            One final example – here's a transaction type that is definitely not standard, but we can envision how it would with Bitcoin Script.
+          </aside>
+        </section>
+        <section>
+          <h3>P2ODorBoDorS</h3>
+          <p><code class="nohighlight bitcoin-script">
+            2 <var>&lt;Pub A&gt;</var> <var>&lt;Pub B&gt;</var> <var>&lt;Pub C&gt;</var> 3 OP_CHECKMULTISIG<br>OP_BOOLOR<br>
+            3 <var>&lt;Pub D&gt;</var> <var>&lt;Pub E&gt;</var> <var>&lt;Pub F&gt;</var> <var>&lt;Pub G&gt;</var> <var>&lt;Pub H&gt;</var> 5 OP_CHECKMULTISIG<br>OP_BOOLOR<br>
+            13 <var>&lt;Pub M1&gt;</var> <var>&lt;Pub M1&gt;</var> [...] <var>&lt;Pub M20&gt;</var> 12 OP_CHECKMULTISIG<br>OP_BOOLOR<br>
+          </code></p>
+
+          <br><small><a href="https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki#520-byte-limitation-on-serialized-script-size">note: P2SH 520 byte limit</a></small>
+          <aside class="notes">
+            Once again, this is non-standard, and actually won't work at all using P2SH due to the 520 byte script limit. Of note, P2SH-P2WSH would allow up to 10,000 bytes, so this may not be very far off.
+          </aside>
+        </section>
+
+
+        <section data-transition="zoom-in slide-out">
+          <h1>Part 2:</h1>
+          <h2>Scriptable Authentication</h2>
+          <aside class="notes">
+            We've just seen the power of bitcoin's "scriptable authentication". Now, let's compare it to current standards.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Static Authentication</h2>
+          <h4>("service-driven")</h4>
+          <ul>
+            <li>Service provides many authentication options</li>
+            <li>Service collects necessary information from the user (password, phone number, secret questions, email address, etc.)</li>
+            <li>To login, service issues challenge(s)</li>
+            <li>Service verifies user response</li>
+          </ul>
+          <aside class="notes">
+            This section applies to authentication standards in most protocols too, but to simplify, I'll discuss it as if we're only talking about web services. Most services use what could be described as a Static Authentication system.
+          </aside>
+        </section>
+
+        <section>
+          <h4>Problems all the way down</h4>
+          <br>
+          <ul>
+            <li>Some user identities have higher security requirements than others</li>
+            <li>Services must provide a variety of options to satisfy all identities</li>
+            <li>Inconsistency across services (re-invented wheels)</li>
+            <li>Ever increasing complexity</li>
+          </ul>
+          <aside class="notes">
+            Static authentication systems come with a lot of downsides.<br>
+            <br>
+            Security requirements – Grandma's Facebook vs. Microsoft's Facebook<br>
+            <br>
+            With complexity comes security problems. E.g. most "hacks" are password resets.
+          </aside>
+        </section>
+
+        <section>
+          <h2>Scriptable Authentication</h2>
+          <h4>("user-driven")</h4>
+          <ul>
+            <li>User chooses authentication requirements</li>
+            <li>Service collects users locking script</li>
+            <li>To login, user provides unlocking script</li>
+            <li>Service validates</li>
+          </ul>
+          <aside class="notes">
+            Here's an alternative. We can take Bitcoin's authentication system, and use it for everything.<br>
+            This is a high-level overview, but we'll dig into the technical details in a minute.
+          </aside>
+        </section>
+
 			</div>
 		</div>
 
