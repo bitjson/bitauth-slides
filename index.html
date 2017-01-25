@@ -246,6 +246,18 @@
           </aside>
         </section>
 
+        <section data-transition="zoom-in slide-out">
+          <h2>Bitcoin Script</h2>
+          <ul>
+            <li>Flexible (with well-chosen constraints)</li>
+            <li>Limited processing requirements</li>
+            <li>Simple implementation</li>
+            <li>Self-contained</li>
+          </ul>
+          <aside class="notes">
+            From the <a href="https://bitcoin.org/en/developer-guide#p2pkh-script-validation">developers guide</a>, "The script language is a Forth-like stack-based language deliberately designed to be stateless and not Turing complete. Statelessness ensures that once a transaction is added to the block chain, there is no condition which renders it permanently unspendable. Turing-incompleteness (specifically, a lack of loops or gotos) makes the script language less flexible and more predictable, greatly simplifying the security model."
+          </aside>
+        </section>
 
         <section data-transition="zoom-in slide-out">
           <h1>Part 2:</h1>
@@ -297,11 +309,449 @@
             <li>Service validates</li>
           </ul>
           <aside class="notes">
-            Here's an alternative. We can take Bitcoin's authentication system, and use it for everything.<br>
-            This is a high-level overview, but we'll dig into the technical details in a minute.
+            Here's an alternative. We can take Bitcoin's authentication system, and use it for everything.
           </aside>
         </section>
 
+        <section>
+          <h4>Why Scriptable Authentication?</h4>
+          <ul>
+            <li>Aligning of security incentives</li>
+            <li>Improved user experience by moving authentication to the (more competitive) consumer sphere</li>
+            <li>Simplify of development requirements for services</li>
+            <li>Fewer systems, fewer attack surfaces</li>
+          </ul>
+          <aside class="notes">
+            This is a high-level overview, but we'll dig into the technical details in a minute.<br>
+            Note to readers: see the Motivation section of the BitAuth BIP for full details on this slide.
+          </aside>
+        </section>
+
+        <section data-transition="zoom-in slide-out">
+          <h1>Part 3:</h1>
+          <h2>Scriptable Authentication &amp; the Blockchain</h2>
+          <aside class="notes">
+          </aside>
+        </section>
+
+        <section>
+          <h3>Why use Bitcoin Script?</h3>
+          <aside class="notes">
+            Before I describe the technical standard, we should address some of the underlying assumptions, so you can understand where it's coming from.
+          </aside>
+        </section>
+
+        <section data-transition="zoom-in slide-out">
+          <h3>Standardization is Hard</h3>
+          <ul>
+            <li>Draft specification creation</li>
+            <li>Standardization management</li>
+            <li>Consensus, standard acceptance</li>
+            <li>Rollout mechanisms</li>
+            <li>Backwards compatibility management</li>
+          </ul>
+          <aside class="notes">
+            Before I describe the technical standard, we should address some of the underlying assumptions, so you can understand where it's coming from.
+          </aside>
+        </section>
+
+        <section>
+          <h3>Why use the Blockchain for identities?</h3>
+          <aside class="notes">
+            Why not just use Bitcoin Script, without storing identities on the chain?
+          </aside>
+        </section>
+
+        <section data-transition="zoom-in slide-out">
+          <h3>The Blockchain is designed to secure identities.</h3>
+          <br>
+          <blockquote>The Blockchain is a secure directory of identities and their authentication requirements.</blockquote>
+          <aside class="notes">
+            We don’t usually think about it this way, but the entire purpose of the blockchain is to record – in a censorship resistant, tamperproof way – the authentication requirements for various identities. That is – in fact – it’s sole purpose.<br>
+            <br>
+            On a high level, when looking through the actual contents of the blockchain, if you scan through the files, the vast majority is simply a listing of "authentication requirement definitions" or "migrations" for millions of identities. Right now, we use those identities to manage funds, but we can do a lot more.
+          </aside>
+        </section>
+
+        <section>
+          <h3>How do we create an identity on the blockchain?</h3>
+          <aside class="notes">
+            This is where we get into the draft specification. You can find the whitepaper (Bitcoin Improvement Proposal) in the GitHub repo.
+          </aside>
+        </section>
+
+        <section data-transition="zoom-in slide-out" data-background-color="#ffffff">
+          <h4>a BitAuth Identity is defined by an Authbase</h4>
+          <br>
+          <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 173.4 65.7" style="enable-background:new 0 0 173.4 65.7;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig1a{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+          	.fig1b{font-weight:300;}
+          	.fig1c{font-size:7.1927px;}
+          	.fig1d{font-weight:700;}
+          </style>
+          <g>
+          	<rect x="0.5" y="0.5" class="fig1a" width="172.4" height="64.7"/>
+          	<rect x="0.5" y="26.4" class="fig1a" width="86.2" height="38.8"/>
+          	<rect x="86.7" y="26.4" class="fig1a" width="86.2" height="38.8"/>
+          	<text transform="matrix(1 0 0 1 15.6663 45.7615)" class="fig1b fig1c">(funding inputs)</text>
+          	<text transform="matrix(1 0 0 1 93.2 45.7618)" class="fig1d fig1c">Identity/Signing Output</text>
+          	<text transform="matrix(1 0 0 1 51.2654 16.0268)" class="fig1b fig1c">Authbase Transaction</text>
+          </g>
+          </svg>
+          <aside class="notes">
+            This is the simplest possible Authbase. It has only one output.
+          </aside>
+        </section>
+
+        <section data-background-color="#ffffff">
+          <h4>Adding a Signing Output</h4>
+          <br>
+          <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 173.4 95.8" style="enable-background:new 0 0 173.4 95.8;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig2a{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+          	.fig2b{font-weight:300;}
+          	.fig2c{font-size:7.1927px;}
+          	.fig2d{font-weight:700;}
+          </style>
+          <defs>
+          </defs>
+          <g>
+          	<rect x="0.5" y="0.5" class="fig2a" width="172.4" height="94.8"/>
+          	<rect x="0.5" y="21.6" class="fig2a" width="172.4" height="73.7"/>
+          	<rect x="86.7" y="21.6" class="fig2a" width="86.2" height="73.7"/>
+          	<text transform="matrix(1 0 0 1 15.6662 58.8131)" class="fig2b fig2c">(funding inputs)</text>
+          	<g>
+          		<rect x="86.7" y="21.6" class="fig2a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 100.0329 32.8795)" class="fig2d fig2c">1. Identity Output</text>
+          		<rect x="86.7" y="39.8" class="fig2a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 100.173 51.0943)" class="fig2d fig2c">2. Signing Output</text>
+          	</g>
+          	<text transform="matrix(1 0 0 1 105.341 79.9225)" class="fig2b fig2c">(other outputs)</text>
+          	<text transform="matrix(1 0 0 1 71.4768 13.3058)" class="fig2b fig2c">Authbase</text>
+          </g>
+          </svg>
+          <aside class="notes">
+            This is the most complex possible Authbase. There are two significant outputs here, the identity output, and the signing output. We’ll discuss both.
+          </aside>
+        </section>
+        <section data-background-color="#ffffff">
+          <h4>Authhead Migration</h4>
+          <br>
+          <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 358.3 95.8" style="enable-background:new 0 0 358.3 95.8;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig3a{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+          	.fig3b{font-weight:300;}
+          	.fig3c{font-size:7.1927px;}
+          	.fig3d{font-weight:700;}
+          </style>
+          <defs>
+          </defs>
+          <g>
+          	<rect x="0.5" y="0.5" class="fig3a" width="172.4" height="94.8"/>
+          	<rect x="0.5" y="21.6" class="fig3a" width="172.4" height="73.7"/>
+          	<rect x="86.7" y="21.6" class="fig3a" width="86.2" height="73.7"/>
+          	<text transform="matrix(1 0 0 1 15.6662 59.8131)" class="fig3b fig3c">(funding inputs)</text>
+          	<g>
+          		<rect x="86.7" y="21.6" class="fig3a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 103.6721 32.8795)" class="fig3d fig3c">Identity Output</text>
+          		<rect x="86.7" y="39.8" class="fig3a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 104.0573 51.0943)" class="fig3d fig3c">Signing Output</text>
+          	</g>
+          	<text transform="matrix(1 0 0 1 105.341 79.9224)" class="fig3b fig3c">(other outputs)</text>
+          	<text transform="matrix(1 0 0 1 71.4768 13.3057)" class="fig3b fig3c">Authbase</text>
+          </g>
+          <g>
+          	<rect x="185.4" y="0.5" class="fig3a" width="172.4" height="94.8"/>
+          	<rect x="185.4" y="21.6" class="fig3a" width="172.4" height="73.7"/>
+          	<rect x="271.6" y="21.6" class="fig3a" width="86.2" height="73.7"/>
+          	<text transform="matrix(1 0 0 1 200.5182 59.8131)" class="fig3b fig3c">(funding inputs)</text>
+          	<g>
+          		<rect x="271.6" y="21.6" class="fig3a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 288.524 32.8795)" class="fig3d fig3c">Identity Output</text>
+          		<rect x="271.6" y="39.8" class="fig3a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 288.9093 51.0943)" class="fig3d fig3c">Signing Output</text>
+          	</g>
+          	<text transform="matrix(1 0 0 1 290.193 79.9224)" class="fig3b fig3c">(other outputs)</text>
+          	<text transform="matrix(1 0 0 1 255.7892 13.3057)" class="fig3b fig3c">Authhead</text>
+          </g>
+          <g>
+          	<polygon points="200,30.7 192.3,25 192.3,36.4 	"/>
+            <rect x="161.9" y="28" width="32" height="5.4"></rect>
+          </g>
+          </svg>
+          <aside class="notes">
+            We migrate an identity to by spending the identity output. The transaction which spends the Authbase's Identity Output is the new Authhead.<br>
+            <br>
+            We can imagine that a new company might start with it's founders sharing a simple multisig identity output, but migrating to more complex authentication schemes as the company grows.
+          </aside>
+        </section>
+        <section data-background-color="#ffffff">
+          <h4>Authhead Resolution</h4>
+          <br>
+          <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 300.3 62.3" style="enable-background:new 0 0 300.3 62.3;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig4a{fill:#FFFFFF;stroke:#000000;stroke-width:0.75;stroke-miterlimit:10;}
+          	.fig4b{font-weight:700;}
+          	.fig4c{font-size:4.6973px;}
+          </style>
+          <defs>
+          </defs>
+          <g>
+          	<g>
+          		<rect x="243.6" y="8.8" class="fig4a" width="56.3" height="18.5"/>
+          		<text transform="matrix(1 0 0 1 261.11 19.5341)" class="fig4b fig4c">Authhead</text>
+          	</g>
+          	<g>
+          		<rect x="0.4" y="8.8" class="fig4a" width="56.3" height="18.5"/>
+          		<text transform="matrix(1 0 0 1 18.2233 19.5341)" class="fig4b fig4c">Authbase</text>
+          	</g>
+          	<g>
+          		<rect x="81.5" y="8.8" class="fig4a" width="56.3" height="18.5"/>
+          		<text transform="matrix(1 0 0 1 100.8899 19.5341)" class="fig4b fig4c">Auth TX</text>
+          	</g>
+          	<rect x="94.6" y="43.5" class="fig4a" width="56.3" height="18.5"/>
+          	<text transform="matrix(1 0 0 1 112.4504 53.5843)" class="fig4b fig4c">Authbase</text>
+          	<g>
+          		<polygon points="75.7,18 72.5,15.7 72.5,20.4 		"/>
+          		<rect x="62.5" y="16.9" width="10.7" height="2.2"/>
+          	</g>
+          	<g>
+          		<polygon points="167.9,34.9 164,35.5 167.4,38.8 		"/>
+          		<rect x="157" y="39.4" transform="matrix(0.7071 -0.7071 0.7071 0.7071 18.9393 126.6738)" width="10.7" height="2.2"/>
+          	</g>
+          	<g>
+          		<polygon points="156.8,18 153.6,15.7 153.6,20.4 		"/>
+          		<rect x="143.6" y="16.9" width="10.7" height="2.2"/>
+          	</g>
+          	<g>
+          		<polygon points="237.9,18 234.7,15.7 234.7,20.4 		"/>
+          		<rect x="224.6" y="16.9" width="10.7" height="2.2"/>
+          	</g>
+          	<g>
+          		<rect x="162.6" y="8.8" class="fig4a" width="56.3" height="18.5"/>
+          		<text transform="matrix(1 0 0 1 181.9785 19.5341)" class="fig4b fig4c">Auth TX</text>
+          	</g>
+          	<text transform="matrix(1 0 0 1 17.714 3.9925)" class="fig4b fig4c">Sept 2017</text>
+          	<text transform="matrix(1 0 0 1 101.2424 3.9923)" class="fig4b fig4c">Jan 2018</text>
+          	<text transform="matrix(1 0 0 1 112.7282 38.9098)" class="fig4b fig4c">Feb 2018</text>
+          	<text transform="matrix(1 0 0 1 181.2908 3.9923)" class="fig4b fig4c">Jul 2019</text>
+          	<text transform="matrix(1 0 0 1 261.0019 3.9923)" class="fig4b fig4c">May 2020</text>
+          </g>
+          </svg>
+          <aside class="notes">
+            When we understand how the Authhead is migrated, we start to see a picture of how Authhead resolution might work. Here's an example in which Authbases are merged (perhaps because the second one was an aquisition of the first company).<br>
+            <br>
+            Anyone in the world can know definitively the authentication requirements of a given identity.<br>
+            <br>
+            It’s possible to resolve the latest Authhead without keeping a copy of the blockchain using SPV validation.
+          </aside>
+        </section>
+
+        <section data-background-color="#ffffff">
+          <h4>BitAuth Signature</h4>
+          <br>
+          <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 378.8 103.8" style="enable-background:new 0 0 378.8 103.8;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig5a{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+          	.fig5b{font-weight:300;}
+          	.fig5c{font-size:7.1927px;}
+          	.fig5d{font-weight:700;}
+          	.st4{font-size:6.2433px;}
+          </style>
+          <defs>
+          </defs>
+          <g>
+          	<rect x="0.5" y="0.5" class="fig5a" width="172.4" height="94.8"/>
+          	<rect x="0.5" y="21.6" class="fig5a" width="172.4" height="73.7"/>
+          	<rect x="86.7" y="21.6" class="fig5a" width="86.2" height="73.7"/>
+          	<text transform="matrix(1 0 0 1 15.6662 59.8131)" class="fig5b fig5c">(funding inputs)</text>
+          	<g>
+          		<rect x="86.7" y="21.6" class="fig5a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 104.8737 32.8795)" class="fig5b fig5c">Identity Output</text>
+          		<rect x="86.7" y="39.8" class="fig5a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 104.0573 51.0944)" class="fig5d fig5c">Signing Output</text>
+          	</g>
+          	<text transform="matrix(1 0 0 1 105.341 79.9225)" class="fig5b fig5c">(other outputs)</text>
+          	<text transform="matrix(1 0 0 1 70.9372 13.3058)" class="fig5b fig5c">Authhead</text>
+          </g>
+          <g>
+          	<rect x="187.9" y="8" class="fig5a" width="172.4" height="55.8"/>
+          	<rect x="187.9" y="35.4" class="fig5a" width="86.2" height="28.3"/>
+          	<rect x="274.1" y="35.4" class="fig5a" width="86.2" height="28.3"/>
+          	<text transform="matrix(1 0 0 1 293.3683 50.9165)" class="fig5d fig5c">Digest Output</text>
+          	<text transform="matrix(1 0 0 1 230.1391 24.6083)" class="fig5b st4">BitAuth Signature (Transaction)</text>
+          	<g>
+          		<polygon points="198.8,49.6 191.1,43.9 191.1,55.3 		"/>
+          		<rect x="166.7" y="46.9" width="25.9" height="5.4"/>
+          	</g>
+          	<text transform="matrix(1 0 0 1 205.3782 47.9003)"><tspan x="2" y="0" class="fig5b fig5c"> Si</tspan><tspan x="7.8" y="0" class="fig5b fig5c">g</tspan><tspan x="11.5" y="0" class="fig5b fig5c">ning Output</tspan><tspan x="5.5" y="8.6" class="fig5b fig5c">of Authhead</tspan></text>
+          	<polygon points="274.1,63.8 187.9,81.3 378.3,81.3 360.3,63.8 	"/>
+          	<rect x="187.9" y="77.3" class="fig5a" width="190.3" height="25.9"/>
+          	<text transform="matrix(1 0 0 1 209.8323 93.0804)"><tspan x="0" y="0" class="fig5b fig5c">OP_RETURN </tspan><tspan x="44.4" y="0" class="fig5d fig5c">&lt;Algorithm&gt; &lt;MessageDigest&gt;</tspan></text>
+          </g>
+          </svg>
+           
+          <aside class="notes">
+            So now we have the Authhead of an identity, and it's Signing Output. To create a BitAuth signature, we can create a sign a transaction spending the Signing Output to a Digest Output.<br>
+            <br>
+            A BitAuth Signature may or may not be a valid bitcoin transaction. To make it invalid (so it won't be mined), the signer can choose to spend more than the amount available in the input(s).<br>
+            <br>
+            The message being signed should be defined by higher-level protocols. The BitAuth Signature simply a message digest and the algorithm by which it was generated.<br>
+            <br>
+            Note, if the higher-level protocol requires that the signature transaction be mined, the OP_RETURN is currently limited to 80 bytes by default network relay policy.
+          </aside>
+        </section>
+
+        <section data-background-color="#ffffff">
+          <h4>BitAuth Layer 2 Protocols</h4>
+          <br>
+           <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 358.3 95.8" style="enable-background:new 0 0 358.3 95.8;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig6a{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+          	.fig6b{font-weight:300;}
+          	.fig6c{font-size:7.1927px;}
+          	.fig6d{font-weight:700;}
+          </style>
+          <defs>
+          </defs>
+          <g>
+          	<g>
+          		<rect x="0.5" y="0.5" class="fig6a" width="172.4" height="94.8"/>
+          		<rect x="0.5" y="21.6" class="fig6a" width="172.4" height="73.7"/>
+          		<rect x="86.7" y="21.6" class="fig6a" width="86.2" height="73.7"/>
+          		<text transform="matrix(1 0 0 1 15.6662 59.8131)" class="st1 fig6c">(funding inputs)</text>
+          		<g>
+          			<rect x="86.7" y="21.6" class="fig6a" width="86.2" height="18.2"/>
+          			<text transform="matrix(1 0 0 1 104.8737 32.8795)" class="st1 fig6c">Identity Output</text>
+          			<rect x="86.7" y="39.8" class="fig6a" width="86.2" height="18.2"/>
+          			<text transform="matrix(1 0 0 1 104.0573 51.0943)" class="fig6d fig6c">Signing Output</text>
+          		</g>
+          		<text transform="matrix(1 0 0 1 105.341 79.9225)" class="st1 fig6c">(other outputs)</text>
+          		<text transform="matrix(1 0 0 1 70.9372 13.3058)" class="st1 fig6c">Authhead</text>
+          	</g>
+          	<g>
+          		<rect x="185.4" y="0.5" class="fig6a" width="172.4" height="94.8"/>
+          		<rect x="185.4" y="21.6" class="fig6a" width="172.4" height="73.7"/>
+          		<rect x="271.6" y="21.6" class="fig6a" width="86.2" height="73.7"/>
+          		<text transform="matrix(1 0 0 1 200.5182 59.8131)" class="st1 fig6c">(funding inputs)</text>
+          		<rect x="271.6" y="21.6" class="fig6a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 282.504 32.8795)" class="fig6d fig6c">Meaningful Output</text>
+          		<rect x="271.6" y="39.8" class="fig6a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 282.504 51.0943)" class="fig6d fig6c">Meaningful Output</text>
+          		<rect x="271.6" y="58" class="fig6a" width="86.2" height="18.2"/>
+          		<text transform="matrix(1 0 0 1 282.504 69.3095)" class="fig6d fig6c">Meaningful Output</text>
+          		<text transform="matrix(1 0 0 1 306.5349 87.6955)" class="st1 fig6c">(etc.)</text>
+          		<text transform="matrix(1 0 0 1 220.901 13.3058)" class="st1 fig6c">Authhead Expansion TX (Example)</text>
+          	</g>
+          	<g>
+          		<polygon points="199,48.9 191.3,43.2 191.3,54.6"/>
+          		<rect x="166.9" y="46.2" width="25.9" height="5.4"/>
+          	</g>
+          </g>
+          </svg>
+          <aside class="notes">
+            This is much more abstract, but this is how I would propose "layer 2" protocols could include additional information related to an identity. We might call it an "Authhead Extension" transaction, and it's outputs could be meaningful to external systems in various ways.
+          </aside>
+        </section>
+        <section data-background-color="#ffffff">
+          <h4>Layer 2 Protocols (Continued)</h4>
+          <ul>
+            <li>Decentralized DNS – output(s) share IPv6/onion address with the world</li>
+            <li>Proofs of ownership – associating a document with an identity in the blockchain</li>
+            <li>inter-wallet addressing system – shares the identity's payment code</li>
+            <li>etc.</li>
+          </ul>
+          <aside class="notes">
+            This is a high-level overview, but we'll dig into the technical details in a minute.<br>
+            Note to readers: see the Motivation section of the BitAuth BIP for full details on this slide.
+          </aside>
+        </section>
+
+        <section data-transition="zoom-in slide-out">
+          <h1>Part 4:</h1>
+          <h2>Use Cases &amp; Implications</h2>
+          <aside class="notes">
+            We just skimmed over some very big possible use cases, let's take a look at some more concrete examples.
+          </aside>
+        </section>
+
+        <section>
+          <h4>User-friendly, secure, software signatures</h4>
+          <br>
+          <!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In  -->
+          <svg version="1.1"
+          	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+          	 x="0px" y="0px" viewBox="0 0 136.5 55.3" style="enable-background:new 0 0 136.5 55.3;"
+          	 xml:space="preserve">
+          <style type="text/css">
+          	.fig7a{fill:#FFFFFF;}
+          	.fig7b{font-weight:300;}
+          	.fig7c{font-size:7.1927px;}
+          	.fig7d{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+          	.st4{fill:#010101;}
+          </style>
+          <defs>
+          </defs>
+          <g>
+          	<text transform="matrix(1 0 0 1 102.0572 53.7813)" class="fig7a fig7b fig7c">bitcoin.zip</text>
+          	<g>
+          		<polygon class="fig7a" points="127.4,0.5 102.2,0.5 102.2,39.7 136,39.7 136,9.1 127.4,9.1 		"/>
+          		<path class="fig7d" d="M127.4,0.5"/>
+          		<polygon class="fig7a" points="136,9.1 127.4,9.1 127.4,0.5 		"/>
+          		<path d="M136.5,8.9L127.6,0h-25.9v40.2h34.8V8.9z M134.7,8.6h-6.9V1.7L134.7,8.6z M135.5,39.2h-32.8V1h24.2v8.6h8.6V39.2z"/>
+          		<g>
+          			<path class="st4" d="M119.1,13.4c-3.7,0-6.7,3-6.7,6.7s3,6.7,6.7,6.7s6.7-3,6.7-6.7S122.8,13.4,119.1,13.4z M122.5,17.8l-4.2,5.3
+          				c0,0-0.1,0.1-0.2,0.1c-0.1,0-0.1,0-0.2-0.1c0,0-2.4-2.3-2.4-2.3l0,0c0,0,0-0.1,0-0.1s0-0.1,0-0.1c0,0,0,0,0,0
+          				c0.2-0.2,0.7-0.7,0.7-0.8c0,0,0.1-0.1,0.1-0.1c0.1,0,0.1,0.1,0.2,0.1c0,0,1.3,1.3,1.3,1.3l3.3-4.3c0,0,0.1,0,0.1,0
+          				c0,0,0.1,0,0.1,0l0.9,0.7C122.5,17.7,122.5,17.7,122.5,17.8C122.5,17.8,122.5,17.8,122.5,17.8z"/>
+          		</g>
+          	</g>
+          	<polygon class="fig7a" points="84.8,20.5 77.6,15.1 77.6,17.9 67.8,17.9 67.8,23 77.6,23 77.6,25.8 	"/>
+          	<text transform="matrix(1 0 0 1 -3.814697e-05 53.7813)" class="fig7a fig7b fig7c">bitcoin.zip.bitauth</text>
+          	<g>
+          		<polygon class="fig7a" points="37.7,0.5 12.5,0.5 12.5,39.7 46.3,39.7 46.3,9.1 37.7,9.1 		"/>
+          		<path class="fig7d" d="M37.7,0.5"/>
+          		<polygon class="fig7a" points="46.3,9.1 37.7,9.1 37.7,0.5 		"/>
+          		<path d="M46.8,8.9L37.9,0H12v40.2h34.8V8.9z M45.1,8.6h-6.9V1.7L45.1,8.6z M45.8,39.2H13V1h24.2v8.6h8.6V39.2z"/>
+          	</g>
+          	<g>
+          		<path d="M25.2,15.3c0.2-0.6,0.5-1.1,0.9-1.5c0.4-0.4,0.9-0.7,1.4-0.8c0.6-0.2,1.2-0.3,2-0.3c1.5,0,2.6,0.4,3.3,1.1
+          			c0.7,0.7,1,1.7,1,2.9c0,0.6-0.1,1.1-0.2,1.6c-0.1,0.5-0.4,0.9-0.7,1.3l-1.5,1.7c-0.2,0.2-0.3,0.5-0.4,0.8
+          			c-0.1,0.3-0.1,0.7-0.1,1.2h-3.3v-0.6c0-0.8,0.1-1.4,0.2-1.9c0.1-0.5,0.4-0.9,0.7-1.3l1.2-1.4c0.3-0.3,0.4-0.6,0.5-0.9
+          			c0.1-0.3,0.1-0.6,0.1-0.8c0-0.4-0.1-0.7-0.2-1c-0.1-0.2-0.4-0.4-0.7-0.4c-0.2,0-0.3,0-0.4,0.1c-0.1,0.1-0.2,0.2-0.3,0.4
+          			c-0.1,0.2-0.1,0.4-0.2,0.8c0,0.3-0.1,0.8-0.1,1.3h-3.4C24.9,16.7,25,15.9,25.2,15.3z M31,24.3v3.2h-3.4v-3.2H31z"/>
+          	</g>
+          </g>
+          </svg>
+          <aside class="notes">
+            
+          </aside>
+        </section>
 			</div>
 		</div>
 
