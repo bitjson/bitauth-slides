@@ -103,35 +103,35 @@
         </section>
 				<section>
           <p>unlocking + locking script</p>
-          <p><code class="nohighlight" style="font-size: .5em"><var>&lt;Sig&gt;</var> <var>&lt;PubKey&gt;</var> | OP_DUP OP_HASH160 <var>&lt;PubkeyHash&gt;</var> OP_EQUALVERIFY OP_CHECKSIG</code></p>
-          <table style="font-size: .6em;">
+          <p><code class="nohighlight" style="font-size: .45em"><var>&lt;maybeSig&gt;</var> <var>&lt;maybePubKey&gt;</var> | OP_DUP OP_HASH160 <var>&lt;PubkeyHash&gt;</var> OP_EQUALVERIFY OP_CHECKSIG</code></p>
+          <table style="font-size: .5em;">
               <tr>
                   <td><strong>Script</strong></td>
                   <td><strong>Stack</strong></td>
               </tr>
               <tr>
-                  <td class="evaluate-script">&lt;Sig&gt;</td>
-                  <td class="evaluate-stack">&lt;Sig&gt;</td>
+                  <td class="evaluate-script">&lt;maybeSig&gt;</td>
+                  <td class="evaluate-stack">&lt;maybeSig&gt;</td>
               </tr>
               <tr>
-                  <td class="evaluate-script">&lt;PubKey&gt;</td>
-                  <td class="evaluate-stack">&lt;PubKey&gt; &lt;Sig&gt;</td>
+                  <td class="evaluate-script">&lt;maybePubKey&gt;</td>
+                  <td class="evaluate-stack">&lt;maybePubKey&gt; &lt;maybeSig&gt;</td>
               </tr>
               <tr>
                   <td class="evaluate-script">OP_DUP</td>
-                  <td class="evaluate-stack">&lt;PubKey&gt; &lt;PubKey&gt; &lt;Sig&gt;</td>
+                  <td class="evaluate-stack">&lt;maybePubKey&gt; &lt;maybePubKey&gt; &lt;maybeSig&gt;</td>
               </tr>
               <tr>
                   <td class="evaluate-script">OP_HASH160</td>
-                  <td class="evaluate-stack">&lt;PubkeyHash&gt; &lt;PubKey&gt; &lt;Sig&gt;</td>
+                  <td class="evaluate-stack">&lt;maybePubkeyHash&gt; &lt;maybePubKey&gt; &lt;maybeSig&gt;</td>
               </tr>
               <tr>
                   <td class="evaluate-script">&lt;PubkeyHash&gt;</td>
-                  <td class="evaluate-stack">&lt;PubkeyHash&gt; &lt;PubkeyHash&gt; &lt;PubKey&gt; &lt;Sig&gt;</td>
+                  <td class="evaluate-stack">&lt;PubkeyHash&gt; &lt;maybePubkeyHash&gt; &lt;maybePubKey&gt; &lt;maybeSig&gt;</td>
               </tr>
               <tr>
                   <td class="evaluate-script">OP_EQUALVERIFY</td>
-                  <td class="evaluate-stack">&lt;PubKey&gt; &lt;Sig&gt;</td>
+                  <td class="evaluate-stack">&lt;verifiedPubKey&gt; &lt;maybeSig&gt;</td>
               </tr>
               <tr>
                   <td class="evaluate-script">OP_CHECKSIG</td>
